@@ -3,5 +3,5 @@ import 'package:dartz/dartz.dart';
 
 abstract class PostLocalDataSours {
   Future<List<PostModels>> getCachedPosts();
- Future<Unit> cachePosts(List<PostModel> postModels);
+  Future<Unit> cachePosts(List<PostModels> postModels);
 }
