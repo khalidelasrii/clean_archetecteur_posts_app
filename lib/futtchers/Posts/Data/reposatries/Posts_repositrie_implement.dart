@@ -1,4 +1,5 @@
 import 'package:clean_archetecteur_pasts_app/core/errure/exeption.dart';
+import 'package:clean_archetecteur_pasts_app/futtchers/Posts/Data/Models/posts_models.dart';
 import 'package:clean_archetecteur_pasts_app/futtchers/Posts/Domain/Entities/Posts.dart';
 import 'package:clean_archetecteur_pasts_app/core/errure/failures.dart';
 import 'package:clean_archetecteur_pasts_app/futtchers/Posts/Domain/Reposateris/Posts_repositrie.dart';
@@ -39,20 +40,54 @@ class PostRepositriUmpl implements PostsReposetrier {
   }
 
   @override
-  Future<Either<Failure, Unit>> addPost(Posts post) {
-    // TODO: implement addPost
+  Future<Either<Failure, Unit>> addPost(Posts post) async {
+    final PostModels postModels =
+        PostModels(id: post.id, title: post.title, completed: post.completed);
+    if (await networkInfo.isConnected) {
+      try {
+        await remotDatasours.AddPost(postModels);
+        return Right(unit);
+      } on SercerExeption {
+        throw Left(ServerFaillure());
+      }
+    }
     throw UnimplementedError();
   }
 
   @override
-  Future<Either<Failure, Unit>> DeletePost(int id) {
-    // TODO: implement DeletePost
-    throw UnimplementedError();
+  Future<Either<Failure, Unit>> DeletePost(int postId) async {
+    if (await networkInfo.isConnected) {
+      try {
+        remotDatasours.DeletPost(postId);
+        return Right(unit);
+      } on SercerExeption {
+        return left(ServerFaillure());
+      }
+    } else {
+      return left(OfflineFaillure());
+    }
   }
 
   @override
-  Future<Either<Failure, Unit>> UpdatePost(Posts posts) {
-    // TODO: implement UpdatePost
-    throw UnimplementedError();
+  Future<Either<Failure, Unit>> UpdatePost(Posts posts) async {
+    final PostModels postModels = PostModels(
+        id: posts.id, title: posts.title, completed: posts.completed);
+    return await _getMessage(() {
+      return remotDatasours.UpdatPost(postModels);
+    });
+  }
+
+  Future<Either<Failure, Unit>> _getMessage(
+      Future<Unit> Function() deleteOrUpdateOrAddPost) async {
+    if (await networkInfo.isConnected) {
+      try {
+        await deleteOrUpdateOrAddPost();
+        return Right(unit);
+      } on SercerExeption {
+        return Left(ServerFaillure());
+      }
+    } else {
+      return Left(OfflineFaillure());
+    }
   }
 }
