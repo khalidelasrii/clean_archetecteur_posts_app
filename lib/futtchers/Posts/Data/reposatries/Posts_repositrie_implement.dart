@@ -9,6 +9,8 @@ import '../../../../core/Network/network_info.dart';
 import '../Data_sours/post_Local_data_sours.dart';
 import '../Data_sours/post_remot_data_sours.dart';
 
+typedef Future<Unit> DeleteOrUpdateOrAddPost();
+
 class PostRepositriUmpl implements PostsReposetrier {
   final PostRemotDataSours remotDatasours;
   final PostLocalDataSours localDataSours;
@@ -43,29 +45,16 @@ class PostRepositriUmpl implements PostsReposetrier {
   Future<Either<Failure, Unit>> addPost(Posts post) async {
     final PostModels postModels =
         PostModels(id: post.id, title: post.title, completed: post.completed);
-    if (await networkInfo.isConnected) {
-      try {
-        await remotDatasours.AddPost(postModels);
-        return Right(unit);
-      } on SercerExeption {
-        throw Left(ServerFaillure());
-      }
-    }
-    throw UnimplementedError();
+    return await _getMessage(() {
+      return remotDatasours.AddPost(postModels);
+    });
   }
 
   @override
   Future<Either<Failure, Unit>> DeletePost(int postId) async {
-    if (await networkInfo.isConnected) {
-      try {
-        remotDatasours.DeletPost(postId);
-        return Right(unit);
-      } on SercerExeption {
-        return left(ServerFaillure());
-      }
-    } else {
-      return left(OfflineFaillure());
-    }
+    return await _getMessage(() {
+      return remotDatasours.DeletPost(postId);
+    });
   }
 
   @override
@@ -78,7 +67,7 @@ class PostRepositriUmpl implements PostsReposetrier {
   }
 
   Future<Either<Failure, Unit>> _getMessage(
-      Future<Unit> Function() deleteOrUpdateOrAddPost) async {
+      DeleteOrUpdateOrAddPost deleteOrUpdateOrAddPost) async {
     if (await networkInfo.isConnected) {
       try {
         await deleteOrUpdateOrAddPost();
