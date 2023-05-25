@@ -4,18 +4,18 @@ class PostModels extends Posts {
   PostModels({
     required int id,
     required String title,
-    required bool completed,
-  }) : super(id: id, title: title, completed: completed);
+    required String body,
+  }) : super(id: id, title: title, body: body);
 
   factory PostModels.fromJson(Map<String, dynamic> json) {
     return PostModels(
-        id: json['id'], title: json['title'], completed: json['completed']);
+        id: json['id'], title: json['title'], body: json['body']);
   }
   Map<String, dynamic> tojson() {
     return {
       'id': id,
       'title': title,
-      'completed': completed,
+      'body': body,
     };
   }
 }

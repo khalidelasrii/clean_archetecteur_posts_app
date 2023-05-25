@@ -28,7 +28,7 @@ class PostRepositriUmpl implements PostsReposetrier {
         final remotePosts = await remotDatasours.GettAllPosts();
         localDataSours.cachePosts(remotePosts);
         return Right(remotePosts);
-      } on SercerExeption {
+      } on ServerExeption {
         return Left(ServerFaillure());
       }
     } else {
@@ -44,10 +44,11 @@ class PostRepositriUmpl implements PostsReposetrier {
   @override
   Future<Either<Failure, Unit>> addPost(Posts post) async {
     final PostModels postModels =
-        PostModels(id: post.id, title: post.title, completed: post.completed);
+        PostModels(id: post.id, title: post.title, body: post.body);
     return await _getMessage(() {
       return remotDatasours.AddPost(postModels);
     });
+    
   }
 
   @override
@@ -60,7 +61,7 @@ class PostRepositriUmpl implements PostsReposetrier {
   @override
   Future<Either<Failure, Unit>> UpdatePost(Posts posts) async {
     final PostModels postModels = PostModels(
-        id: posts.id, title: posts.title, completed: posts.completed);
+        id: posts.id, title: posts.title, body: posts.body);
     return await _getMessage(() {
       return remotDatasours.UpdatPost(postModels);
     });
@@ -72,7 +73,7 @@ class PostRepositriUmpl implements PostsReposetrier {
       try {
         await deleteOrUpdateOrAddPost();
         return Right(unit);
-      } on SercerExeption {
+      } on ServerExeption {
         return Left(ServerFaillure());
       }
     } else {

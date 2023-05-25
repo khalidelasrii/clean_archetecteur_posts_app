@@ -1,5 +1,5 @@
-class SercerExeption implements Exception {}
+class ServerExeption implements Exception {}
 
 class EmptyCacheExeption implements Exception {}
 
-class offlineExeption implements Exception {}
+class OfflineExeption implements Exception {}

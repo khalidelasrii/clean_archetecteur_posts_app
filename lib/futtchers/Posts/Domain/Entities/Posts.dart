@@ -4,10 +4,10 @@ import 'package:flutter/material.dart';
 class Posts extends Equatable {
   final int id;
   final String title;
-  final bool completed;
+  final String body;
 
-  Posts({required this.id, required this.title, required this.completed});
+  const Posts({required this.id, required this.title, required this.body, required });
 
   @override
-  List<Object?> get props => [id, title, completed];
+  List<Object?> get props => [id, title, body];
 }
